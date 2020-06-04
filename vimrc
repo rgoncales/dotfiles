@@ -1,6 +1,11 @@
 syntax on
 
-"preferences
+"tab-sizes
+filetype plugin indent on
+set tabstop=2 softtabstop=2
+set shiftwidth=2
+set expandtab
+
 set splitright
 set hls
 set ignorecase
@@ -12,16 +17,9 @@ set smartcase
 set nobackup
 set undodir=~/.vim/undodir
 set undofile
-set autoindent
+set smartindent
 set incsearch
 set scrolloff=8
-let g:netrw_banner = 0
-
-"tab-sizes
-filetype plugin indent on
-set tabstop=2
-set shiftwidth=2
-set expandtab
 
 "give more space for displaying messages.
 set cmdheight=2
@@ -35,16 +33,12 @@ highlight ColorColumn ctermbg=0 guibg=lightgrey
 set laststatus=2
 set title
 
-"modding find
-set path+=**
-set wildmenu
-"set wildmode=longest:full,full
-set wildignore+=**/node_modules/**
-
 set clipboard=unnamed
 
 call plug#begin('~/.vim/plugins')
 Plug 'sheerun/vim-polyglot'
+Plug 'jremmen/vim-ripgrep'
+Plug 'mbbill/undotree'
 Plug 'prettier/vim-prettier'
 Plug 'morhetz/gruvbox'
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
@@ -52,14 +46,24 @@ Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'junegunn/fzf.vim'
 call plug#end()
 
+colorscheme gruvbox
+set background=dark
+
+if executable('rg')
+  let g:rg_derive_root='true'
+endif  
+
+let mapleader = " "
+
+let g:netrw_browse_split = 2
+let g:netrw_banner = 0
+let g:netrw_winsize = 25
 let g:prettier#autoformat = 0
 "autocmd BufWritePre *.js,*.jsx,*.mjs,*.ts,*.tsx,*.css,*.less,*.scss,*.json,*.graphql,*.md,*.vue PrettierAsync
 
 "CSS autocompletion
 autocmd FileType css set omnifunc=csscomplete
 
-"colorscheme onedark
-colorscheme gruvbox
 
 "coc plugin
 nmap <leader>gd <Plug>(coc-definition)
