@@ -1,97 +1,114 @@
-syntax on
+"=============== Basic Sets ===============
+set exrc
 
-"tab-sizes
-filetype plugin indent on
 set tabstop=2 softtabstop=2
 set shiftwidth=2
 set expandtab
+set smartindent
 
-set splitright
-set hls
-set ignorecase
 set cul
+set guicursor=
 set number
 set relativenumber
-set nowrap
+set scrolloff=8
+
+set hls
+set ignorecase
 set smartcase
+set incsearch
+
 set nobackup
 set undodir=~/.vim/undodir
 set undofile
-set smartindent
-set incsearch
-set scrolloff=8
 
-"give more space for displaying messages.
+set nowrap
+set noerrorbells
+set splitright
+set hidden
+set clipboard=unnamed
+
+" give more space for displaying messages.
 set cmdheight=2
-set updatetime=750
 
-"set column
+" longer updatetimes show noticeable lag 
+set updatetime=50
+
+" set columns
+set signcolumn=yes
 set colorcolumn=80
-highlight ColorColumn ctermbg=0 guibg=lightgrey
 
-"display statusline
+" display statusline
 set laststatus=2
 set title
 
-set clipboard=unnamed
+"=============== Plugins ===============
 
-call plug#begin('~/.vim/plugins')
+call plug#begin('~/.config/nvim/plugged')
   Plug 'sheerun/vim-polyglot'
-  Plug 'jremmen/vim-ripgrep'
-  Plug 'mbbill/undotree'
-  Plug 'prettier/vim-prettier'
-  Plug 'morhetz/gruvbox'
+  Plug 'gruvbox-community/gruvbox'
   Plug 'neoclide/coc.nvim', {'branch': 'release'}
   Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
   Plug 'junegunn/fzf.vim'
-  Plug 'w0rp/ale'
+  Plug 'jremmen/vim-ripgrep'
+  Plug 'preservim/nerdcommenter'
+  Plug 'mhinz/vim-grepper'
 call plug#end()
 
-"ale config
-let g:ale_enabled = 0
-let g:ale_sign_error = '❌'
-let g:ale_sign_warning = '⚠️'
-let g:ale_linters = { 'javascript': ['eslint'] }
-let g:ale_fixers = {  'javascript': ['prettier']}
-let g:ale_lint_on_enter = 0
-let g:ale_lint_on_save = 0
-let g:ale_fix_on_save = 0
-
 colorscheme gruvbox
-set background=dark
+highlight Normal guibg=none ctermbg=none
 
-if executable('rg')
-  let g:rg_derive_root='true'
-endif  
+let g:coc_global_extensions = [
+  \ 'coc-tsserver',
+  \ 'coc-prettier',
+  \ 'coc-pairs',
+  \ 'coc-eslint',
+  \ 'coc-json',
+  \ 'coc-css',
+  \ ]
+ 
+"=============== Remaps ===============
 
-"let g:netrw_browse_split = 2
 let g:netrw_banner = 0
-"let g:netrw_winsize = 25
-let g:prettier#autoformat = 0
-"autocmd BufWritePre *.js,*.jsx,*.mjs,*.ts,*.tsx,*.css,*.less,*.scss,*.json,*.graphql,*.md,*.vue PrettierAsync
-
-"CSS autocompletion
-autocmd FileType css set omnifunc=csscomplete
-
 let mapleader = " "
 
-"coc plugin
-nmap <leader>gd <Plug>(coc-definition)
-"nmap <leader>gr <Plug>(coc-references)
+""remap for line movement
+"nnoremap <C-j> :m .+1<CR>==
+"nnoremap <C-k> :m .-2<CR>==
 
-"prettier
-nmap <Leader>py <Plug>(Prettier)
+" use py to run prettier
+nmap <Leader>py :CocCommand prettier.formatFile<CR>
+
+" move through autocomplete suggestions
+inoremap <expr> <C-j> pumvisible() ? "\<C-n>" : "\<C-j>"
+inoremap <expr> <C-k> pumvisible() ? "\<C-p>" : "\<C-k>"
 
 "fzf file explorer
 nnoremap <C-p> :GFiles<CR>
 
-"remap for line movement
-nnoremap <C-j> :m .+1<CR>==
-nnoremap <C-k> :m .-2<CR>==
+""for ripgrep
+"if executable('rg')
+"  let g:rg_derive_root='true'
+"endif  
 
-"remap Esc
-inoremap jjj <Esc>
-inoremap lll <Esc>
-inoremap hhh <Esc>
-inoremap kkk <Esc>
+" Grepper - a search tools
+let g:grepper = {}
+let g:grepper.tools = ['rg']
+" Grep for selection
+nnoremap <leader>g :Grepper -tool rg<cr>
+nnoremap <leader>G :Grepper -tool rg -buffers<cr>
 
+" comment/uncomment out 
+nnoremap <Leader>cl <plug>NERDCommenterToggle
+vnoremap <Leader>cl <plug>NERDCommenterToggle
+
+" ctrl-[hjkl] to select active split
+nmap <silent> <C-k> <C-w>k
+nmap <silent> <C-j> <C-w>j
+nmap <silent> <C-h> <C-w>h
+nmap <silent> <C-l> <C-w>l
+
+" Remap keys for gotos
+nmap <silent> gd <Plug>(coc-definition)
+nmap <silent> gy <Plug>(coc-type-definition)
+nmap <silent> gi <Plug>(coc-implementation)
+nmap <silent> gr <Plug>(coc-references)
