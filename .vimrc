@@ -86,9 +86,9 @@ inoremap <expr> <C-k> pumvisible() ? "\<C-p>" : "\<C-k>"
 nnoremap <C-p> :GFiles<CR>
 
 ""for ripgrep
-"if executable('rg')
-"  let g:rg_derive_root='true'
-"endif  
+if executable('rg')
+  let g:rg_derive_root='true'
+endif  
 
 " Grepper - a search tools
 let g:grepper = {}
