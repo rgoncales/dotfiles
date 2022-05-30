@@ -27,6 +27,8 @@ set splitright
 set hidden
 set clipboard=unnamed
 
+set re=0 "make syntax highlight faster
+
 " give more space for displaying messages.
 set cmdheight=2
 
@@ -100,6 +102,11 @@ nnoremap <leader>G :Grepper -tool rg -buffers<cr>
 " comment/uncomment out 
 nnoremap <Leader>cl <plug>NERDCommenterToggle
 vnoremap <Leader>cl <plug>NERDCommenterToggle
+
+" used as a breakpoint when writing notes
+nnoremap <Leader>div o<cr>---- ---- ---- ---- ---- ---- ---- ---- ---- ----
+      \---- ---- ---- ---- ---- ----<cr>---- ---- ---- ---- ---- ---- ---- ---- ----
+      \---- ---- ---- ---- ---- ---- ----<cr><Esc>
 
 " ctrl-[hjkl] to select active split
 nmap <silent> <C-k> <C-w>k
