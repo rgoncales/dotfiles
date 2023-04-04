@@ -54,10 +54,11 @@ call plug#begin('~/.config/nvim/plugged')
   Plug 'jremmen/vim-ripgrep'
   Plug 'preservim/nerdcommenter'
   Plug 'mhinz/vim-grepper'
+  Plug 'iamcco/markdown-preview.nvim', { 'do': { -> mkdp#util#install() }, 'for': ['markdown', 'vim-plug']}
 call plug#end()
 
 colorscheme gruvbox
-highlight Normal guibg=none ctermbg=none
+"highlight Normal guibg=none ctermbg=none
 
 let g:coc_global_extensions = [
   \ 'coc-tsserver',
@@ -80,9 +81,28 @@ let mapleader = " "
 " use py to run prettier
 nmap <Leader>py :CocCommand prettier.formatFile<CR>
 
+" begin - autocomplete
+" see setup -> :h coc-completion-example
+
+" Use <tab> and <S-tab> to navigate completion list: >
 " move through autocomplete suggestions
-inoremap <expr> <C-j> pumvisible() ? "\<C-n>" : "\<C-j>"
-inoremap <expr> <C-k> pumvisible() ? "\<C-p>" : "\<C-k>"
+function! s:check_back_space() abort
+  let col = col('.') - 1
+  return !col || getline('.')[col - 1]  =~ '\s'
+endfunction
+
+" Insert <tab> when previous text is space, refresh completion if not.
+inoremap <silent><expr> <TAB>
+\ coc#pum#visible() ? coc#pum#next(1):
+\ <SID>check_back_space() ? "\<Tab>" :
+\ coc#refresh()
+inoremap <expr><S-TAB> coc#pum#visible() ? coc#pum#prev(1) : "\<C-h>"
+
+
+" Use <CR> to confirm completion, use:
+inoremap <expr> <cr> coc#pum#visible() ? coc#_select_confirm() : "\<CR>"
+
+" end - autocomplete
 
 "fzf file explorer
 nnoremap <C-p> :GFiles<CR>
@@ -105,8 +125,8 @@ vnoremap <Leader>cl <plug>NERDCommenterToggle
 
 " used as a breakpoint when writing notes
 nnoremap <Leader>div o<cr>---- ---- ---- ---- ---- ---- ---- ---- ---- ----
-      \---- ---- ---- ---- ---- ----<cr>---- ---- ---- ---- ---- ---- ---- ---- ----
-      \---- ---- ---- ---- ---- ---- ----<cr><Esc>
+      \ ---- ---- ---- ---- ---- ----<cr>---- ---- ---- ---- ---- ---- ---- ---- ----
+      \ ---- ---- ---- ---- ---- ---- ----<cr><Esc>
 
 " ctrl-[hjkl] to select active split
 nmap <silent> <C-k> <C-w>k
