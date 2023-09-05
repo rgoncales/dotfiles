@@ -58,7 +58,7 @@ call plug#begin('~/.config/nvim/plugged')
 call plug#end()
 
 colorscheme gruvbox
-"highlight Normal guibg=none ctermbg=none
+highlight Normal guibg=NONE ctermbg=NONE
 
 let g:coc_global_extensions = [
   \ 'coc-tsserver',
@@ -67,6 +67,7 @@ let g:coc_global_extensions = [
   \ 'coc-eslint',
   \ 'coc-json',
   \ 'coc-css',
+  \ 'coc-pyright',
   \ ]
  
 "=============== Remaps ===============
