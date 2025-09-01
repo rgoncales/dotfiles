@@ -7,7 +7,7 @@ set expandtab
 set smartindent
 
 set cul
-set guicursor=
+"set guicursor=
 set number
 set relativenumber
 set scrolloff=8
@@ -43,11 +43,22 @@ set colorcolumn=80
 set laststatus=2
 set title
 
+" function folding
+" zo - opens folds
+" zc - closes fold
+" zm - increases auto fold depth
+" zr - reduces auto fold depth
+set foldmethod=syntax
+set foldlevel=999 "set to 1 for auto indent
+set foldclose=all
+
 "=============== Plugins ===============
 
 call plug#begin('~/.config/nvim/plugged')
   Plug 'sheerun/vim-polyglot'
+  "color schemes
   Plug 'gruvbox-community/gruvbox'
+  Plug 'NLKNguyen/papercolor-theme'
   Plug 'neoclide/coc.nvim', {'branch': 'release'}
   Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
   Plug 'junegunn/fzf.vim'
@@ -57,8 +68,13 @@ call plug#begin('~/.config/nvim/plugged')
   Plug 'iamcco/markdown-preview.nvim', { 'do': { -> mkdp#util#install() }, 'for': ['markdown', 'vim-plug']}
 call plug#end()
 
+
 colorscheme gruvbox
-highlight Normal guibg=NONE ctermbg=NONE
+set background=dark    " Setting dark mode
+"colorscheme PaperColor
+"set background=light   " Setting light mode
+
+"highlight Normal guibg=NONE ctermbg=NONE
 
 let g:coc_global_extensions = [
   \ 'coc-tsserver',
@@ -80,7 +96,17 @@ let mapleader = " "
 "nnoremap <C-k> :m .-2<CR>==
 
 " use py to run prettier
-nmap <Leader>py :CocCommand prettier.formatFile<CR>
+"nmap <Leader>py :CocCommand prettier.formatFile<CR>
+"%!black - -l79
+function! FormatBuffer()
+  if &filetype ==# 'python'
+    execute '%!black - -l79'
+  else
+    execute 'CocCommand prettier.formatFile'
+  endif
+endfunction
+
+nnoremap <Leader>py :call FormatBuffer()<CR>
 
 " begin - autocomplete
 " see setup -> :h coc-completion-example
@@ -140,3 +166,7 @@ nmap <silent> gd <Plug>(coc-definition)
 nmap <silent> gy <Plug>(coc-type-definition)
 nmap <silent> gi <Plug>(coc-implementation)
 nmap <silent> gr <Plug>(coc-references)
+
+" copy current path
+nmap <leader>fp :let @+ = expand("%")<cr>
+
