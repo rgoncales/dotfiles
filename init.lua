@@ -1,6 +1,5 @@
 --=============== Basic Settings ===============
 vim.opt.exrc = true
-
 vim.opt.tabstop = 2
 vim.opt.softtabstop = 2
 vim.opt.shiftwidth = 2
@@ -34,78 +33,57 @@ vim.opt.colorcolumn = "80"
 vim.opt.laststatus = 2
 vim.opt.title = true
 
-vim.opt.foldmethod = "syntax"
-vim.opt.foldlevel = 999
+vim.opt.foldmethod = "expr"
+vim.opt.foldexpr = "nvim_treesitter#foldexpr()"
+vim.opt.foldlevel = 99
 vim.opt.foldclose = "all"
 
 --=============== Plugins ===============
 require("packer").startup(function(use)
   use "wbthomason/packer.nvim"
-  use "sheerun/vim-polyglot"
-  use "gruvbox-community/gruvbox"
-  use "NLKNguyen/papercolor-theme"
-  use {"neoclide/coc.nvim", branch = "release"}
-  use {"junegunn/fzf", run = function() vim.fn["fzf#install"]() end}
-  use "junegunn/fzf.vim"
-  use "jremmen/vim-ripgrep"
+
+  use { "morhetz/gruvbox", as = "gruvbox" }
+
+  -- Treesitter for syntax
+  --USE FOR FIRST INSTALL, THEN SWITCH TO TSUpdate
+  --use {
+  --    'nvim-treesitter/nvim-treesitter',
+  --    run = function()
+  --        local ts_update = require('nvim-treesitter.install').update({ with_sync = true })
+  --        ts_update()
+  --    end,
+  --}
+  use {"nvim-treesitter/nvim-treesitter", run = ":TSUpdate"}
+
+  -- LSP + Autocompletion
+  use "neovim/nvim-lspconfig"
+  use "williamboman/mason.nvim"
+  use "williamboman/mason-lspconfig.nvim"
+  use "hrsh7th/nvim-cmp"
+  use "hrsh7th/cmp-nvim-lsp"
+  use "hrsh7th/cmp-buffer"
+  use "hrsh7th/cmp-path"
+  use "hrsh7th/cmp-cmdline"
+  use "L3MON4D3/LuaSnip"
+  use "saadparwaiz1/cmp_luasnip"
+
+  -- Telescope (fzf replacement)
+  use {"nvim-telescope/telescope.nvim", requires = {"nvim-lua/plenary.nvim"}}
+
+  -- Utilities
   use "preservim/nerdcommenter"
   use "mhinz/vim-grepper"
+  use "jremmen/vim-ripgrep"
   use {"iamcco/markdown-preview.nvim", run = "cd app && npm install", ft = {"markdown"}}
 end)
 
-vim.cmd [[
-  colorscheme gruvbox
-  set background=dark
-]]
-
-vim.g.coc_global_extensions = {
-  "coc-tsserver",
-  "coc-prettier",
-  "coc-pairs",
-  "coc-eslint",
-  "coc-json",
-  "coc-css",
-  "coc-pyright",
-}
+vim.g.gruvbox_contrast_light = "medium"
+vim.cmd.colorscheme "gruvbox"
+vim.o.background = "dark"
 
 --=============== Keymaps ===============
 vim.g.mapleader = " "
 vim.g.netrw_banner = 0
-
--- Formatter
-function FormatBuffer()
-  if vim.bo.filetype == "python" then
-    vim.cmd("%!black - -l79")
-  else
-    vim.cmd("CocCommand prettier.formatFile")
-  end
-end
-vim.keymap.set("n", "<Leader>py", FormatBuffer)
-
--- Completion (tab navigation)
-function _G.check_back_space()
-  local col = vim.fn.col(".") - 1
-  return col == 0 or vim.fn.getline("."):sub(col, col):match("%s")
-end
-
-vim.api.nvim_set_keymap("i", "<TAB>", 'coc#pum#visible() ? coc#pum#next(1) : v:lua.check_back_space() ? "<TAB>" : coc#refresh()', {expr = true, silent = true})
-vim.api.nvim_set_keymap("i", "<S-TAB>", 'coc#pum#visible() ? coc#pum#prev(1) : "<C-h>"', {expr = true, silent = true})
-vim.api.nvim_set_keymap("i", "<CR>", 'coc#pum#visible() ? coc#_select_confirm() : "<CR>"', {expr = true, silent = true})
-
--- FZF
-vim.keymap.set("n", "<C-p>", ":GFiles<CR>")
-
--- Grepper
-vim.g.grepper = {tools = {"rg"}}
-vim.keymap.set("n", "<leader>g", ":Grepper -tool rg<CR>")
-vim.keymap.set("n", "<leader>G", ":Grepper -tool rg -buffers<CR>")
-
--- NERDCommenter
-vim.keymap.set("n", "<Leader>cl", "<plug>NERDCommenterToggle")
-vim.keymap.set("v", "<Leader>cl", "<plug>NERDCommenterToggle")
-
--- Divider insert
-vim.keymap.set("n", "<Leader>div", "o<CR>" .. string.rep("---- ", 15) .. "<CR>" .. string.rep("---- ", 15) .. "<CR><Esc>")
 
 -- Window navigation
 vim.keymap.set("n", "<C-k>", "<C-w>k", {silent = true})
@@ -113,12 +91,71 @@ vim.keymap.set("n", "<C-j>", "<C-w>j", {silent = true})
 vim.keymap.set("n", "<C-h>", "<C-w>h", {silent = true})
 vim.keymap.set("n", "<C-l>", "<C-w>l", {silent = true})
 
--- Coc navigation
-vim.keymap.set("n", "gd", "<Plug>(coc-definition)", {silent = true})
-vim.keymap.set("n", "gy", "<Plug>(coc-type-definition)", {silent = true})
-vim.keymap.set("n", "gi", "<Plug>(coc-implementation)", {silent = true})
-vim.keymap.set("n", "gr", "<Plug>(coc-references)", {silent = true})
+-- Commenter
+vim.keymap.set("n", "<Leader>cl", "<plug>NERDCommenterToggle")
+vim.keymap.set("v", "<Leader>cl", "<plug>NERDCommenterToggle")
+
+-- Telescope bindings
+vim.keymap.set("n", "<C-p>", "<cmd>Telescope git_files<CR>")
+vim.keymap.set("n", "<leader>ff", "<cmd>Telescope find_files<CR>")
+vim.keymap.set("n", "<leader>fg", "<cmd>Telescope live_grep<CR>")
+vim.keymap.set("n", "<leader>fb", "<cmd>Telescope buffers<CR>")
+vim.keymap.set("n", "<leader>fh", "<cmd>Telescope help_tags<CR>")
 
 -- Copy current path
 vim.keymap.set("n", "<leader>fp", ':let @+ = expand("%")<CR>')
 
+--=============== Treesitter ===============
+require("nvim-treesitter.configs").setup {
+  highlight = { enable = true },
+  indent = { enable = true },
+}
+
+--=============== Completion ===============
+local cmp = require("cmp")
+local luasnip = require("luasnip")
+
+cmp.setup({
+  snippet = {
+    expand = function(args)
+      luasnip.lsp_expand(args.body)
+    end,
+  },
+  mapping = cmp.mapping.preset.insert({
+    ["<TAB>"] = cmp.mapping.select_next_item(),
+    ["<S-TAB>"] = cmp.mapping.select_prev_item(),
+    ["<CR>"] = cmp.mapping.confirm({ select = true }),
+  }),
+  sources = cmp.config.sources({
+    { name = "nvim_lsp" },
+    { name = "luasnip" },
+    { name = "buffer" },
+    { name = "path" },
+  }),
+})
+
+--=============== LSP ===============
+require("mason").setup()
+require("mason-lspconfig").setup({
+  ensure_installed = { "pyright", "ts_ls", "jsonls", "cssls", "eslint" },
+})
+
+local lspconfig = require("lspconfig")
+local capabilities = require("cmp_nvim_lsp").default_capabilities()
+
+local servers = { "pyright", "ts_ls", "jsonls", "cssls", "eslint" }
+for _, lsp in ipairs(servers) do
+  lspconfig[lsp].setup({
+    capabilities = capabilities,
+  })
+end
+
+-- LSP keymaps
+vim.keymap.set("n", "gd", vim.lsp.buf.definition, {silent = true})
+vim.keymap.set("n", "gy", vim.lsp.buf.type_definition, {silent = true})
+vim.keymap.set("n", "gi", vim.lsp.buf.implementation, {silent = true})
+vim.keymap.set("n", "gr", vim.lsp.buf.references, {silent = true})
+vim.keymap.set("n", "K", vim.lsp.buf.hover, {silent = true})
+
+-- Format command
+vim.keymap.set("n", "<Leader>py", function() vim.lsp.buf.format({async = true}) end)
